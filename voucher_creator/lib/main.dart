@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:voucher_creator/features/create_feature/presentation/page/create_page.dart';
+import 'package:voucher_creator/features/loading_feature/presentation/loading_page.dart';
 import 'package:voucher_creator/features/main_feature/presentation/bloc/pdf_list/pdf_list_bloc.dart';
 import 'package:voucher_creator/features/main_feature/presentation/page/main_page.dart';
 import 'package:voucher_creator/features/settings_feature/presentation/bloc/settings/settings_bloc.dart';
@@ -39,8 +40,9 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: true,
         ),
-        home: const MainPage(),
+        home: const LoadingPage(),
         routes: {
+          '/loading': (context) => const LoadingPage(),
           '/main': (context) => const MainPage(),
           '/create': (context) => const CreatePage(),
           '/settings': (context) => const SettingsPage(),

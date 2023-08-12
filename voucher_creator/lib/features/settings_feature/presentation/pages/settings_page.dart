@@ -33,6 +33,7 @@ class _SettingsPageState extends State<SettingsPage> {
         setState(() {
           imagePath = file.path;
         });
+        print(imagePath);
       }
     } catch (e) {
       imagePath = '';
@@ -44,7 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('Ρυθμίσεις'),
       ),
       body: SingleChildScrollView(
         child: BlocBuilder<SettingsBloc, SettingsModel>(
@@ -186,6 +187,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               );
                               final Directory dir =
                                   await getApplicationDocumentsDirectory();
+
                               final String path = dir.path;
                               final File file = File('$path/signature.png');
                               await file.writeAsBytes(

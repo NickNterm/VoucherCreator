@@ -1,13 +1,16 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:voucher_creator/features/create_feature/presentation/page/preview_page.dart';
 import 'package:voucher_creator/features/main_feature/data/model/pdf_data_model.dart';
+import 'package:voucher_creator/features/main_feature/domain/entities/pdf_data.dart';
 import 'package:voucher_creator/features/main_feature/presentation/bloc/pdf_list/pdf_list_bloc.dart';
 import 'package:voucher_creator/injection.dart';
 
 class CreatePage extends StatefulWidget {
-  const CreatePage({super.key});
+  const CreatePage({
+    super.key,
+    this.pdfData,
+  });
+  final PDFData? pdfData;
 
   @override
   State<CreatePage> createState() => _CreatePageState();
@@ -28,12 +31,26 @@ class _CreatePageState extends State<CreatePage> {
       TextEditingController();
 
   List<String> names = [];
+  @override
+  void initState() {
+    super.initState();
+    _voucherIdController.text = widget.pdfData?.id.toString() ?? "";
+    _tripDateController.text = widget.pdfData?.date ?? "";
+    _tripStartHourController.text = widget.pdfData?.startHour ?? "";
+    _tripEndHourController.text = widget.pdfData?.endHour ?? "";
+    _tripStartLocationController.text = widget.pdfData?.startLocation ?? "";
+    _tripEndLocationController.text = widget.pdfData?.endLocation ?? "";
+    _tripAmountController.text = widget.pdfData?.amount ?? "";
+    names = widget.pdfData?.names ?? [];
+
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("New Voucher"),
+        title: const Text("Νέο Voucher"),
       ),
       body: Stack(
         fit: StackFit.expand,
@@ -43,225 +60,63 @@ class _CreatePageState extends State<CreatePage> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      const Text(
-                        "Voucher ID",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 5,
-                          ),
-                          child: TextField(
-                            controller: _voucherIdController,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              hintText: "ex. 13",
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  RowEntryWidget(
+                    title: "Αριθμός Σύμβασης",
+                    controller: _voucherIdController,
+                    hint: "ex. 12",
+                    keyboardType: TextInputType.number,
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Text(
-                        "Trip Date",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 5,
-                          ),
-                          child: TextField(
-                            controller: _tripDateController,
-                            keyboardType: TextInputType.datetime,
-                            decoration: const InputDecoration(
-                              hintText: "ex. 20/03/23",
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  RowEntryWidget(
+                    title: "Ημερομηνία",
+                    controller: _tripDateController,
+                    hint: "ex. 12/04/2023",
+                    keyboardType: TextInputType.datetime,
                   ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
                       Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text(
-                              "Start Time",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 5,
-                              ),
-                              child: TextField(
-                                controller: _tripStartHourController,
-                                keyboardType: TextInputType.datetime,
-                                decoration: const InputDecoration(
-                                  hintText: "ex. 20:30",
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                          ],
+                        child: ColumnEntryWidget(
+                          title: "Ώρα Εκκίνησης",
+                          controller: _tripStartHourController,
+                          hint: "ex. 12:30",
+                          keyboardType: TextInputType.datetime,
                         ),
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text(
-                              "End Time",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(
-                              height: 8,
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 5,
-                              ),
-                              child: TextField(
-                                controller: _tripEndHourController,
-                                keyboardType: TextInputType.datetime,
-                                decoration: const InputDecoration(
-                                  hintText: "ex. 20:30",
-                                  border: InputBorder.none,
-                                ),
-                              ),
-                            ),
-                          ],
+                        child: ColumnEntryWidget(
+                          title: "Ώρα Αφίξεως",
+                          controller: _tripEndHourController,
+                          hint: "ex. 16:00",
+                          keyboardType: TextInputType.datetime,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Text(
-                        "Start Location",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 5,
-                          ),
-                          child: TextField(
-                            controller: _tripStartLocationController,
-                            decoration: const InputDecoration(
-                              hintText: "ex. Θεσσαλονίκη",
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  RowEntryWidget(
+                    title: "Έναρξη",
+                    controller: _tripStartLocationController,
+                    hint: "ex. Ιωάννινα",
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Text(
-                        "Finish Location",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 5,
-                          ),
-                          child: TextField(
-                            controller: _tripEndLocationController,
-                            decoration: const InputDecoration(
-                              hintText: "ex. Αθήνα",
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  RowEntryWidget(
+                    title: "Προορισμός",
+                    controller: _tripEndLocationController,
+                    hint: "ex. Αθήνα",
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      const Text(
-                        "Amount",
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 5,
-                          ),
-                          child: TextField(
-                            controller: _tripAmountController,
-                            decoration: const InputDecoration(
-                              hintText: "ex. 120",
-                              border: InputBorder.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  RowEntryWidget(
+                    title: "Ποσό",
+                    controller: _tripAmountController,
+                    hint: "ex. 123",
+                    keyboardType: TextInputType.number,
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    "Participants",
+                    "Συμμετέχοντες",
                     style: TextStyle(fontSize: 16),
                   ),
                   ListView.builder(
@@ -313,7 +168,7 @@ class _CreatePageState extends State<CreatePage> {
                             final SnackBar snackBar = SnackBar(
                               elevation: 0,
                               content: const Text(
-                                "Please enter a name!",
+                                "Εισάγετε ένα όνομα",
                                 textAlign: TextAlign.center,
                               ),
                               behavior: SnackBarBehavior.floating,
@@ -329,7 +184,7 @@ class _CreatePageState extends State<CreatePage> {
                           final SnackBar snackBar = SnackBar(
                             elevation: 0,
                             content: const Text(
-                              "You can't add more than 8 participants!",
+                              "Μπορείτε να εισάγετε μέχρι 8 ονόματα",
                               textAlign: TextAlign.center,
                             ),
                             behavior: SnackBarBehavior.floating,
@@ -374,7 +229,6 @@ class _CreatePageState extends State<CreatePage> {
               );
               sl<PdfListBloc>().add(CreatePDFEvent(data));
               sl<PdfListBloc>().stream.listen((event) {
-                print("test");
                 if (mounted) {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
@@ -388,17 +242,17 @@ class _CreatePageState extends State<CreatePage> {
               print(e);
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     elevation: 0,
                     content: Text(
-                      "Please enter a valid voucher id!",
+                      "Εισάγετε έναν αριθμό στο Αριθμός Σύμβασης",
                       textAlign: TextAlign.center,
                     ),
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(8)),
                     ),
-                    backgroundColor: Colors.red,
+                    backgroundColor: Colors.red.shade300,
                   ),
                 );
               }
@@ -407,7 +261,7 @@ class _CreatePageState extends State<CreatePage> {
             final SnackBar snackBar = SnackBar(
               elevation: 0,
               content: const Text(
-                "Please fill all the fields!",
+                "Συμπληρώστε όλα τα πεδία",
                 textAlign: TextAlign.center,
               ),
               behavior: SnackBarBehavior.floating,
@@ -421,6 +275,103 @@ class _CreatePageState extends State<CreatePage> {
         },
         child: const Icon(Icons.create_rounded),
       ),
+    );
+  }
+}
+
+class ColumnEntryWidget extends StatelessWidget {
+  const ColumnEntryWidget({
+    super.key,
+    required TextEditingController controller,
+    required this.title,
+    this.hint = '',
+    this.keyboardType = TextInputType.text,
+  }) : controller = controller;
+
+  final TextEditingController controller;
+  final String title;
+  final String hint;
+  final TextInputType keyboardType;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          title,
+          style: TextStyle(fontSize: 16),
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 5,
+          ),
+          child: TextField(
+            controller: controller,
+            keyboardType: keyboardType,
+            decoration: InputDecoration(
+              hintText: hint,
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class RowEntryWidget extends StatelessWidget {
+  const RowEntryWidget({
+    super.key,
+    required TextEditingController controller,
+    required this.title,
+    this.hint = "",
+    this.keyboardType = TextInputType.text,
+  }) : controller = controller;
+
+  final TextEditingController controller;
+  final String title;
+  final String hint;
+  final TextInputType keyboardType;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Text(
+          title,
+          style: TextStyle(fontSize: 16),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 5,
+            ),
+            child: TextField(
+              controller: controller,
+              keyboardType: keyboardType,
+              decoration: InputDecoration(
+                hintText: hint,
+                border: InputBorder.none,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

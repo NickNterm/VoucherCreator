@@ -92,9 +92,6 @@ class PDFDataModel extends PDFData {
                   children: [
                     pw.Text(
                       'ΑΡΙΘΜΟΣ\nΣΥΜΒΑΣΗΣ',
-                      style: const pw.TextStyle(
-                        fontSize: 20,
-                      ),
                     ),
                     pw.Container(
                       width: 110,

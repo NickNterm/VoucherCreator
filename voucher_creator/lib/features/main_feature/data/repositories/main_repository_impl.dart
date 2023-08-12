@@ -18,7 +18,6 @@ class MainRepositoryImpl extends MainRepository {
       await localDataSource.cacheData(pdfData);
       return const Right(true);
     } catch (e) {
-      print(e);
       return Left(
         Failure(message: 'Error creating PDF'),
       );

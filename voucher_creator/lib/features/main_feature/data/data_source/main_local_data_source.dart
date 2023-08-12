@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:voucher_creator/core/constants/cache_keys.dart';
+import 'package:voucher_creator/core/constants/storage_paths.dart';
 import 'package:voucher_creator/features/main_feature/data/model/pdf_data_model.dart';
 
 abstract class MainLocalDataSource {
@@ -24,26 +26,26 @@ class MainLocalDataSourceImpl extends MainLocalDataSource {
       var status = await Permission.storage.status;
       if (!status.isGranted) {
         await Permission.storage.request();
-        await Permission.manageExternalStorage.request();
       }
+      status = await Permission.storage.status;
       if (!status.isGranted) {
         throw Exception();
       }
-      if (!await Directory('/storage/emulated/0/Documents/VoucherCreator/')
-          .exists()) {
-        await Directory('/storage/emulated/0/Documents/VoucherCreator/')
-            .create(recursive: true);
-      }
+
+      String pathString = await getPDFPath();
       final file = File(
-        '/storage/emulated/0/Documents/VoucherCreator/Voucher_$id.pdf',
+        '${pathString}/Voucher_$id.pdf',
       );
       if (await file.exists()) {
         await file.delete();
       }
-      await file.writeAsBytes(await pdf.save());
+      await file.create(recursive: true);
+      await file.writeAsBytes(
+        await pdf.save(),
+        flush: true,
+      );
       return true;
     } catch (e) {
-      print("error saving pdf");
       print(e.toString());
       throw Exception();
     }
