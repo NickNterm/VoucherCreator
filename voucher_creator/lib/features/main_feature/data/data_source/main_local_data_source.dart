@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,12 +22,16 @@ class MainLocalDataSourceImpl extends MainLocalDataSource {
   @override
   Future<bool> savePDF(pw.Document pdf, int id) async {
     try {
-      var status = await Permission.storage.status;
+      print('Saving PDF');
+      var status = await Permission.manageExternalStorage.status;
+      print("Status is : " + status.toString());
       if (!status.isGranted) {
-        await Permission.storage.request();
+        print('Permission not granted 1');
+        await Permission.manageExternalStorage.request();
       }
-      status = await Permission.storage.status;
+      status = await Permission.manageExternalStorage.status;
       if (!status.isGranted) {
+        print('Permission not granted 2');
         throw Exception();
       }
 
@@ -46,6 +49,7 @@ class MainLocalDataSourceImpl extends MainLocalDataSource {
       );
       return true;
     } catch (e) {
+      print('Error saving PDF');
       print(e.toString());
       throw Exception();
     }

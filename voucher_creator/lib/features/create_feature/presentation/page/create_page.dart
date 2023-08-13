@@ -1,4 +1,8 @@
+import 'dart:io';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:syncfusion_flutter_signaturepad/signaturepad.dart';
 import 'package:voucher_creator/features/create_feature/presentation/page/preview_page.dart';
 import 'package:voucher_creator/features/main_feature/data/model/pdf_data_model.dart';
 import 'package:voucher_creator/features/main_feature/domain/entities/pdf_data.dart';
@@ -216,47 +220,106 @@ class _CreatePageState extends State<CreatePage> {
               _tripEndLocationController.text.isNotEmpty &&
               _tripStartLocationController.text.isNotEmpty &&
               names.isNotEmpty) {
-            try {
-              PDFDataModel data = PDFDataModel(
-                id: int.parse(_voucherIdController.text),
-                date: _tripDateController.text,
-                startHour: _tripStartHourController.text,
-                endHour: _tripEndHourController.text,
-                startLocation: _tripStartLocationController.text,
-                endLocation: _tripEndLocationController.text,
-                amount: _tripAmountController.text,
-                names: names,
-              );
-              sl<PdfListBloc>().add(CreatePDFEvent(data));
-              sl<PdfListBloc>().stream.listen((event) {
-                if (mounted) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                      builder: (context) => PreviewPage(pdfData: data),
+            showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  GlobalKey<SfSignaturePadState> _signaturePadKey = GlobalKey();
+                  return AlertDialog(
+                    title: const Text('Επιλογή υπογραφής'),
+                    content: Container(
+                      height: 200,
+                      width: 300,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.black,
+                        ),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: SfSignaturePad(
+                          backgroundColor: Colors.transparent,
+                          key: _signaturePadKey,
+                        ),
+                      ),
                     ),
-                    (route) => route.isFirst,
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Ακύρωση'),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          try {
+                            ui.Image image =
+                                await _signaturePadKey.currentState!.toImage(
+                              pixelRatio: 3,
+                            );
+                            final bytedata = await image.toByteData(
+                              format: ui.ImageByteFormat.png,
+                            );
+                            final Directory dir =
+                                await getApplicationDocumentsDirectory();
+
+                            final String path = dir.path;
+                            final File file = File('$path/signatureB.png');
+                            await file.writeAsBytes(
+                              bytedata!.buffer.asUint8List(
+                                bytedata.offsetInBytes,
+                                bytedata.lengthInBytes,
+                              ),
+                            );
+
+                            PDFDataModel data = PDFDataModel(
+                              id: int.parse(_voucherIdController.text),
+                              date: _tripDateController.text,
+                              startHour: _tripStartHourController.text,
+                              endHour: _tripEndHourController.text,
+                              startLocation: _tripStartLocationController.text,
+                              endLocation: _tripEndLocationController.text,
+                              amount: _tripAmountController.text,
+                              names: names,
+                            );
+                            sl<PdfListBloc>().add(CreatePDFEvent(data));
+                            sl<PdfListBloc>().stream.listen((event) {
+                              if (mounted) {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        PreviewPage(pdfData: data),
+                                  ),
+                                  (route) => route.isFirst,
+                                );
+                              }
+                            });
+                          } catch (e) {
+                            print(e);
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  elevation: 0,
+                                  content: Text(
+                                    "Εισάγετε έναν αριθμό στο Αριθμός Σύμβασης",
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  behavior: SnackBarBehavior.floating,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(8)),
+                                  ),
+                                  backgroundColor: Colors.red.shade300,
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        child: const Text('Αποθήκευση'),
+                      ),
+                    ],
                   );
-                }
-              });
-            } catch (e) {
-              print(e);
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    elevation: 0,
-                    content: Text(
-                      "Εισάγετε έναν αριθμό στο Αριθμός Σύμβασης",
-                      textAlign: TextAlign.center,
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(8)),
-                    ),
-                    backgroundColor: Colors.red.shade300,
-                  ),
-                );
-              }
-            }
+                });
           } else {
             final SnackBar snackBar = SnackBar(
               elevation: 0,

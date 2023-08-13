@@ -143,6 +143,98 @@ class _SettingsPageState extends State<SettingsPage> {
                   );
                 },
               ),
+              ListTile(
+                title: Text("Διεύθυνση"),
+                subtitle: Text(
+                  state.address,
+                ),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      final TextEditingController _controller =
+                          TextEditingController();
+                      return AlertDialog(
+                        title: const Text('Διεύθυνση:'),
+                        content: TextField(
+                          decoration: const InputDecoration(
+                            hintText: 'Σακελλαρίου 19',
+                          ),
+                          controller: _controller,
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Ακύρωση'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              var bloc = sl<SettingsBloc>();
+                              bloc.add(
+                                SetSettingsEvent(
+                                  bloc.state.copyWith(
+                                    address: _controller.text.trim(),
+                                  ),
+                                ),
+                              );
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Αποθήκευση'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+              ListTile(
+                title: Text("ΑΦΜ"),
+                subtitle: Text(
+                  state.afm,
+                ),
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      final TextEditingController _controller =
+                          TextEditingController();
+                      return AlertDialog(
+                        title: const Text('ΑΦΜ'),
+                        content: TextField(
+                          decoration: const InputDecoration(
+                            hintText: 'ΑΦΜ',
+                          ),
+                          controller: _controller,
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Ακύρωση'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              var bloc = sl<SettingsBloc>();
+                              bloc.add(
+                                SetSettingsEvent(
+                                  bloc.state.copyWith(
+                                    afm: _controller.text.trim(),
+                                  ),
+                                ),
+                              );
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Αποθήκευση'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
               GestureDetector(
                 onTap: () {
                   showDialog(

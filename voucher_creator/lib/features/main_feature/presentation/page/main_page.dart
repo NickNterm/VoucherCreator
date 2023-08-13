@@ -205,6 +205,9 @@ class _MainPageState extends State<MainPage> {
                                 children: [
                                   Text(
                                     'Voucher ${state[index].id}',
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -212,12 +215,18 @@ class _MainPageState extends State<MainPage> {
                                   ),
                                   Text(
                                     'Ημερομηνία: ${state[index].date}',
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                       fontSize: 18,
                                     ),
                                   ),
                                   Text(
                                     'Έναρξη: ${state[index].startLocation}',
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                       fontSize: 18,
                                     ),
@@ -227,7 +236,9 @@ class _MainPageState extends State<MainPage> {
                                         MediaQuery.of(context).size.width * 0.5,
                                     child: Text(
                                       'Προορισμός: ${state[index].endLocation}',
-                                      softWrap: true,
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
                                         fontSize: 18,
                                       ),
@@ -235,6 +246,9 @@ class _MainPageState extends State<MainPage> {
                                   ),
                                   Text(
                                     'Ποσό: ${state[index].amount}€',
+                                    maxLines: 1,
+                                    softWrap: false,
+                                    overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                       fontSize: 18,
                                     ),
@@ -286,9 +300,8 @@ class _MainPageState extends State<MainPage> {
           var settings = sl<SettingsBloc>().state;
           final Directory dir = await getApplicationDocumentsDirectory();
           File signature = File('${dir.path}/signature.png');
-          if (settings.firstName == '' ||
-              settings.secondName == '' ||
-              !signature.existsSync()) {
+          print(settings.isEmpty);
+          if (settings.isEmpty || !signature.existsSync()) {
             final snackBar = SnackBar(
               content: const Text(
                 'Πρέπει να συμπληρώσεις τα στοιχεία σου και να υπογράψεις το Voucher',

@@ -64,6 +64,7 @@ class PDFDataModel extends PDFData {
     final Directory dir = await getApplicationDocumentsDirectory();
     final String path = dir.path;
     final File imageFile = File('$path/signature.png');
+    final File imageFile2 = File('$path/signatureB.png');
     final Settings settings = sl<SettingsBloc>().state;
     final pdf = pw.Document(
       theme: pw.ThemeData.withFont(
@@ -89,10 +90,12 @@ class PDFDataModel extends PDFData {
                 top: 0,
                 left: 0,
                 child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
                     pw.Text(
                       'ΑΡΙΘΜΟΣ\nΣΥΜΒΑΣΗΣ',
                     ),
+                    pw.SizedBox(height: 10),
                     pw.Container(
                       width: 110,
                       height: 30,
@@ -188,7 +191,7 @@ class PDFDataModel extends PDFData {
                     ),
                     pw.Bullet(
                       text:
-                          "Του ${settings.firstName} με την επωνυμία ${settings.secondName} και διακριτικό τίτλο-δραστηριότητα (ΕΚΜΕΤΑΛΕΥΤΗΣ ΤΑΞΙ ΤΑΕ 6213) που εδρεύει στην Σακελλαρίου 19 στα Ιωάννινα (Νομός Ιωαννίνων) με Α.Φ.Μ 105311304.",
+                          "Του ${settings.firstName} με την επωνυμία ${settings.secondName} και διακριτικό τίτλο-δραστηριότητα (ΕΚΜΕΤΑΛΕΥΤΗΣ ΤΑΞΙ ΤΑΕ 6213) που εδρεύει στην ${settings.address} στα Ιωάννινα (Νομός Ιωαννίνων) με Α.Φ.Μ ${settings.afm}.",
                       textAlign: pw.TextAlign.center,
                       style: const pw.TextStyle(
                         fontSize: 14,
@@ -264,13 +267,26 @@ class PDFDataModel extends PDFData {
                 ),
               ),
               pw.Positioned(
-                bottom: 80,
+                bottom: 0,
                 right: 0,
-                child: pw.Text(
-                  "Υπογραφή β",
-                  style: const pw.TextStyle(
-                    fontSize: 14,
-                  ),
+                child: pw.Column(
+                  mainAxisSize: pw.MainAxisSize.min,
+                  children: [
+                    pw.Text(
+                      "Υπογραφή β",
+                      style: const pw.TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                    pw.Image(
+                      pw.MemoryImage(
+                        Uint8List.fromList(
+                          imageFile2.readAsBytesSync(),
+                        ),
+                      ),
+                      height: 80,
+                    ),
+                  ],
                 ),
               ),
             ],

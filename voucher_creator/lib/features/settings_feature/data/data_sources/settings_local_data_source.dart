@@ -18,10 +18,7 @@ class SettingsLocalDataSourceImpl extends SettingsLocalDataSource {
   Future<SettingsModel> getSettings() async {
     String settingsString = sharedPreferences.getString(kSettingsKey) ?? "";
     if (settingsString == '') {
-      return const SettingsModel(
-        firstName: '',
-        secondName: '',
-      );
+      return SettingsModel.def();
     }
     return SettingsModel.fromJson(jsonDecode(settingsString));
   }
